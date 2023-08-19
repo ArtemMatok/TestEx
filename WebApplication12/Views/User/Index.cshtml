@@ -1,0 +1,93 @@
+﻿@model User
+
+
+<div class="text-center">
+    <form asp-action="Create" asp-controller="User" method="post">
+        <div>
+            <input asp-for="Message.Text" placeholder="Message" type="text" id="messageText" />
+            <input asp-for="Name" placeholder="UserName" type="text" />
+            <button class="btn btn-primary" type="submit">Send Message</button>
+        </div> 
+    </form>
+
+    <form asp-action="GetAllMessagesByName" method="post" id="getMessagesByNameForm">
+         <input asp-for="Name" placeholder="UserName" type="text" />
+         <button class="btn btn-primary" type="submit">Send Message</button>
+    </form>
+
+
+</div>
+
+
+
+
+
+
+
+
+<div id="messageList">
+    <!-- Часткове відображення буде вставлено сюди за допомогою Ajax -->
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script> <!-- Підключення бібліотеки Swal -->
+
+<script>
+    $(document).ready(function () {
+        // ...
+
+        // Обробник натискання на кнопку "Send Message" для отримання повідомлень за ім'ям користувача
+        $("#getMessagesByNameForm").submit(function (event) {
+            event.preventDefault(); // Зупинити перезавантаження сторінки
+            hideTable(); // Hide the table
+            getMessagesByName();
+        });
+    });
+
+    function getMessagesByName() {
+        $.post("/User/GetAllMessagesByName", $("#getMessagesByNameForm").serialize(), function (data) {
+            $("#messageList").html(data);
+            showTable(); // Show the table after updating data
+        });
+    }
+
+    // Function to hide the table
+    function hideTable() {
+        $("#userMessagesTable").hide();
+    }
+
+    // Function to show the table
+    function showTable() {
+        $("#userMessagesTable").show();
+    }
+
+</script>
+
+
+
+
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Message Id</th>
+            <th>UserId</th>
+            <th>User Name</th>
+            <th>Message Text</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in DB.allUsers.Take(20).OrderByDescending(x => x.DataCreate))
+        {
+            @foreach (var message in user.Messages)
+            {
+                <tr>
+                    <td>@message.Id</td>
+                    <td>@user.Id</td>
+                    <td>@user.Name</td>
+                    <td>@message.Text</td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>

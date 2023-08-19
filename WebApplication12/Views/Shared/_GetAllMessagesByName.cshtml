@@ -1,0 +1,24 @@
+﻿@model List<User>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Message Id</th>
+            <th>User Name</th>
+            <th>Message Text</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Model.Take(10))
+        {
+            @foreach (var message in user.Messages.OrderByDescending(x=>x.DataCreate))
+            {
+                        <tr>
+                            <td>@message.Id</td>
+                            <td>@user.Name</td>
+                            <td>@message.Text</td>
+                        </tr>
+            }
+        }
+    </tbody>
+</table>
